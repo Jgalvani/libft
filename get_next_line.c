@@ -6,7 +6,7 @@
 /*   By: jgalvani <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/09 15:19:16 by jgalvani          #+#    #+#             */
-/*   Updated: 2017/11/22 14:18:38 by jgalvani         ###   ########.fr       */
+/*   Updated: 2017/11/22 16:02:41 by jgalvani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void		get_end(char **str, t_chain *data)
 	data->next_line = 1;
 	copy = ft_strnew(ft_strlen(*str) + i);
 	copy = ft_strcpy(copy, *str);
-	free(*str);
+	ft_strdel(str);
 	*str = copy;
 	copy += ft_strlen(copy);
 	copy = ft_strncpy(copy, (data->buf), i);
@@ -74,7 +74,7 @@ static int		get_line(t_chain *data, char **str)
 				get_end(&*str, data);
 				return (1);
 			}
-			if ((del = *str) && data->read)
+			if (data->read && (del = *str))
 			{
 				*str = ft_strjoin(*str, data->buf);
 				ft_strdel(&del);
@@ -131,10 +131,9 @@ int				get_next_line(const int fd, char **line)
 		*line = get_start(data);
 		if (data->buf[ft_strlen(*line)] == '\n')
 			return (1);
-		else
-			free(*line);
 	}
-	*line = ft_strnew(0);
+	if (!*data->buf && !data->next_line)
+		*line = ft_strnew(0);
 	if (!(get_line(data, &*line)))
 		return (-1);
 	if (data->read == 0 && !*line[0])
